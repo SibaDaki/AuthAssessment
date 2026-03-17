@@ -50,7 +50,7 @@ namespace AuthAssessment.Services.CoreServices
                 FirstName = request.FirstName.Trim(),
                 LastName = request.LastName.Trim(),
                 Email = request.Email.Trim().ToLower(),
-               // PasswordHash = BCrypt.PasswordToByteArray,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -87,8 +87,8 @@ namespace AuthAssessment.Services.CoreServices
                 return new LoginResponse { Success = false, Message = "Invalid email or password" };
 
             // Verify password
-            //if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
-            //    return new LoginResponse { Success = false, Message = "Invalid email or password" };
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+                return new LoginResponse { Success = false, Message = "Invalid email or password" };
 
             // Generate token
             var token = _tokenService.GenerateToken(user);
